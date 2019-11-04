@@ -133,6 +133,7 @@ void ABoidController::Tick(float DeltaTime)
 						SeperationForce -= Difference;
 					}
 
+					// Don't need to calculate other forces if we need to seperate from other agents
 					if (SeperationForce.Size() == 0)
 					{
 						// If in view cone			
