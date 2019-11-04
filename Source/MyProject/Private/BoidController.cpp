@@ -91,7 +91,6 @@ void ABoidController::Tick(float DeltaTime)
 	const TArray<FBoidData> LastFrameData = BoidDatas;
 
 	ParallelFor(BoidDatas.Num(), [&](int32 i)
-	//for(int i = 0; i < BoidDatas.Num(); i++)
 	{
 		const bool bProcessForces = true;
 
@@ -127,34 +126,30 @@ void ABoidController::Tick(float DeltaTime)
 
 				if (Distance < NeighbourRadius && Distance > 0)
 				{
-					// If in view cone			
-					float degreesOut = FVector::DotProduct(TargetBoidData.Velocity, Difference);
-					degreesOut /= Distance;
-					degreesOut /= TargetBoidData.Velocity.Size();
-					if (degreesOut >= cos(FMath::DegreesToRadians(VisionConeAngle / 2.0f)))
-					{
-						/*if (i == DebugIndex && bShowDebug)
-						{							
-							DrawDebugPoint(GetWorld(), OtherLocation, 6, FColor::Red, false, 0.35f, 100);
-						}*/
-
-						CohesionForce += OtherLocation;
-						AlignmentForce += OtherBoidData.Velocity;
-
-						NeighbourCount++;						
-
-						if (NeighbourCount >= MaxNeighbours)
-							break;
-					}
-
 					// Seperation
 					if (Distance < SeperationRadius)
 					{
 						SeperationNeighbourCount++;
-						float dot2 = FVector::DotProduct(TargetBoidData.Velocity, Difference) / Distance / TargetBoidData.Velocity.Size();
-						SeperationForce -= Difference;// *(dot2 + 1) / 2;
+						SeperationForce -= Difference;
 					}
 
+					if (SeperationForce.Size() == 0)
+					{
+						// If in view cone			
+						float degreesOut = FVector::DotProduct(TargetBoidData.Velocity, Difference);
+						degreesOut /= Distance;
+						degreesOut /= TargetBoidData.Velocity.Size();
+						if (degreesOut >= cos(FMath::DegreesToRadians(VisionConeAngle / 2.0f)))
+						{
+							CohesionForce += OtherLocation;
+							AlignmentForce += OtherBoidData.Velocity;
+
+							NeighbourCount++;
+
+							if (NeighbourCount >= MaxNeighbours)
+								break;
+						}
+					}
 				}
 			}
 
@@ -185,17 +180,29 @@ void ABoidController::Tick(float DeltaTime)
 			}
 
 			// Clamp
-			CohesionForce = UKismetMathLibrary::ClampVectorSize(CohesionForce, 0, MaxForce);
-			AlignmentForce = UKismetMathLibrary::ClampVectorSize(AlignmentForce, 0, MaxForce);
-			SeperationForce = UKismetMathLibrary::ClampVectorSize(SeperationForce, 0, MaxForce);
-			SeekForce = UKismetMathLibrary::ClampVectorSize(SeekForce, 0, MaxForce);
-			//CollisionAvoidanceForce = UKismetMathLibrary::ClampVectorSize(CollisionAvoidanceForce, 0, MaxForce);
+			//CohesionForce = UKismetMathLibrary::ClampVectorSize(CohesionForce, 0, MaxForce);
+			//AlignmentForce = UKismetMathLibrary::ClampVectorSize(AlignmentForce, 0, MaxForce);
+			//SeperationForce = UKismetMathLibrary::ClampVectorSize(SeperationForce, 0, MaxForce);
+			//SeekForce = UKismetMathLibrary::ClampVectorSize(SeekForce, 0, MaxForce);
+			////CollisionAvoidanceForce = UKismetMathLibrary::ClampVectorSize(CollisionAvoidanceForce, 0, MaxForce);
 
-			CohesionForce *= CohesionStrength;
-			AlignmentForce *= AlignmentStrength;
-			SeperationForce *= SeperationStrength;
-			SeekForce *= SeekStrength;
-			CollisionAvoidanceForce *= CollisionAvoidanceStrength;
+			// Avoidance forces take precedent over all others
+			if (SeperationForce.Size() == 0 && CollisionAvoidanceForce.Size() == 0)
+			{
+				CohesionForce *= CohesionStrength;
+				AlignmentForce *= AlignmentStrength;
+				SeperationForce *= SeperationStrength;
+				SeekForce *= SeekStrength;
+				CollisionAvoidanceForce *= CollisionAvoidanceStrength;
+			}
+			else
+			{
+				CohesionForce *= 0;
+				AlignmentForce *= 0;
+				SeperationForce *= SeperationStrength;
+				SeekForce *= 0;
+				CollisionAvoidanceForce *= CollisionAvoidanceStrength;			
+			}
 
 			const auto Force = (AlignmentForce + CohesionForce + SeperationForce + SeekForce + CollisionAvoidanceForce).GetClampedToMaxSize(MaxForce);
 
