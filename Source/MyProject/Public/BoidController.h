@@ -52,9 +52,6 @@ protected:
 	float MaximumMaxVelocity = 1000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boids|Setup")
-		float InitialVelocityMaxMagnitude = 200.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boids|Setup")
 		FVector BoidScale = FVector::OneVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boids|Setup")

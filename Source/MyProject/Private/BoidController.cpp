@@ -74,7 +74,7 @@ void ABoidController::CreateBoid()
 	auto BoidData = FBoidData
 	{
 		Transform,
-		UKismetMathLibrary::RandomUnitVector() * (UKismetMathLibrary::RandomFloat() * 2 - 1) * InitialVelocityMaxMagnitude,
+		UKismetMathLibrary::RandomUnitVector() * (UKismetMathLibrary::RandomFloat() * 2 - 1) * RandMaxVelocity,
 		FVector::ZeroVector,
 		RandMaxVelocity,
 		HierarchicalMeshIndex
@@ -112,6 +112,8 @@ void ABoidController::Tick(float DeltaTime)
 
 			auto CollisionAvoidanceForce = FVector::ZeroVector;
 
+			auto ViewForce = FVector::ZeroVector;
+
 			for (int j = 0; j < LastFrameData.Num(); j++)
 			{
 				const auto& OtherBoidData = LastFrameData[j];
@@ -146,6 +148,17 @@ void ABoidController::Tick(float DeltaTime)
 							AlignmentForce += OtherBoidData.Velocity;
 
 							NeighbourCount++;
+
+							if (ViewForce.Size() == 0)
+							{
+								FVector Right = FVector::CrossProduct(Difference, TargetBoidData.Velocity);
+
+								/*if (TargetBoidData.InstancedMeshIndex == DebugIndex+1 && bShowDebug)
+								{
+									DrawDebugLine()
+								}*/
+							}
+
 
 							if (NeighbourCount >= MaxNeighbours)
 								break;
