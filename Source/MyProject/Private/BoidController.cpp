@@ -100,7 +100,7 @@ void ABoidController::Tick(float DeltaTime)
 		{
 			const auto TargetLocation = TargetBoidData.Transform.GetLocation();
 
-			int NeighbourCount = 0;
+			TargetBoidData.NumNeighbours = 0;
 
 			auto AlignmentForce = FVector::ZeroVector;
 			auto CohesionForce = FVector::ZeroVector;
@@ -147,7 +147,9 @@ void ABoidController::Tick(float DeltaTime)
 							CohesionForce += OtherLocation;
 							AlignmentForce += OtherBoidData.Velocity;
 
-							NeighbourCount++;
+							TargetBoidData.NumNeighbours++;
+
+
 
 							if (ViewForce.Size() == 0)
 							{
@@ -160,7 +162,7 @@ void ABoidController::Tick(float DeltaTime)
 							}
 
 
-							if (NeighbourCount >= MaxNeighbours)
+							if (TargetBoidData.NumNeighbours >= MaxNeighbours)
 								break;
 						}
 					}
@@ -178,12 +180,12 @@ void ABoidController::Tick(float DeltaTime)
 			if (SeekDistance > SeekStopRadius)
 				SeekForce = SeekDifference;
 
-			if (NeighbourCount > 0)
+			if (TargetBoidData.NumNeighbours > 0)
 			{
-				CohesionForce /= NeighbourCount;
+				CohesionForce /= TargetBoidData.NumNeighbours;
 				CohesionForce -= TargetLocation;
 
-				AlignmentForce /= NeighbourCount;
+				AlignmentForce /= TargetBoidData.NumNeighbours;
 				AlignmentForce -= TargetBoidData.Velocity;
 			}
 
@@ -232,6 +234,13 @@ void ABoidController::Tick(float DeltaTime)
 		auto UpdatedLocation = CurrentLocation + TargetBoidData.Velocity * DeltaTime;
 
 		// Update Transform
+		float ScaleFloat = (TargetBoidData.NumNeighbours + 1) / (float)NeighboursForFullScale;
+		ScaleFloat = FMath::Clamp(ScaleFloat, 0.0f, 1.0f);
+
+		TargetBoidData.TargetScale = BoidScale + BoidScale * ScaleFloat * MaxNeighboursScaleMultiplier;
+		const auto CurrentScale = TargetBoidData.Transform.GetScale3D();
+
+		TargetBoidData.Transform.SetScale3D((TargetBoidData.TargetScale - CurrentScale) / ScaleEasing);
 		TargetBoidData.Transform.SetLocation(UpdatedLocation);
 		TargetBoidData.Transform.SetRotation(UKismetMathLibrary::MakeRotFromZ(TargetBoidData.Velocity).Quaternion());		
 	});

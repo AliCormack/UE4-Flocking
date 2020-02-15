@@ -26,6 +26,12 @@ struct FBoidData
 
 	UPROPERTY(BlueprintReadOnly)
 	int InstancedMeshIndex;
+
+	UPROPERTY(BlueprintReadOnly)
+	int NumNeighbours;
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector TargetScale;
 };
 
 UCLASS()
@@ -86,6 +92,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boids|Neighbour Detection")
 		int MaxNeighbours = 30;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boids|Neighbour Detection")
+	int NeighboursForFullScale = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boids|Neighbour Detection")
+	float MaxNeighboursScaleMultiplier = 4.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boids|Neighbour Detection")
+	float ScaleEasing = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boids|Controller", meta = (ClampMin = "0", UIMin = "0"))
 		float TimeDilation = 1;
