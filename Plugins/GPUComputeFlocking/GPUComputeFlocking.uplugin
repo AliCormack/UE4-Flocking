@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "GPUComputeFlocking",
+	"Description": "",
+	"Category": "Other",
+	"CreatedBy": "Ali Cormack",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "GPUComputeFlocking",
+			"Type": "DeveloperTool",
+			"LoadingPhase": "PostConfigInit"
+		}
+	]
+}
