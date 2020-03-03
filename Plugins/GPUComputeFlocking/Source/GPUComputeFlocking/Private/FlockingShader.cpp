@@ -18,8 +18,7 @@ public:
 	SHADER_USE_PARAMETER_STRUCT(FFlockingShaderCS, FGlobalShader);
 
 	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
-		SHADER_PARAMETER_UAV(RWTexture2D<uint>, OutputTexture)
-		SHADER_PARAMETER(FVector2D, TextureSize) // Metal doesn't support GetDimensions(), so we send in this data via our parameters.
+		SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, data)
 		SHADER_PARAMETER(float, Time)
 		END_SHADER_PARAMETER_STRUCT()
 
@@ -51,12 +50,11 @@ void FFlockingShader::RunComputeShader_RenderThread(FRHICommandListImmediate& RH
 	UnbindRenderTargets(RHICmdList);
 	RHICmdList.TransitionResource(EResourceTransitionAccess::ERWBarrier, EResourceTransitionPipeline::EGfxToCompute, ComputeShaderOutputUAV);
 
-	FComputeShaderExampleCS::FParameters PassParameters;
-	PassParameters.OutputTexture = ComputeShaderOutputUAV;
-	PassParameters.TextureSize = FVector2D(DrawParameters.GetRenderTargetSize().X, DrawParameters.GetRenderTargetSize().Y);
-	PassParameters.SimulationState = DrawParameters.SimulationState;
+	FFlockingShaderCS::FParameters PassParameters;
+	
+	PassParameters.Time = DrawParameters.Time;
 
-	TShaderMapRef<FComputeShaderExampleCS> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
+	TShaderMapRef<FFlockingShaderCS> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 	FComputeShaderUtils::Dispatch(RHICmdList, *ComputeShader, PassParameters,
 		FIntVector(FMath::DivideAndRoundUp(DrawParameters.GetRenderTargetSize().X, NUM_THREADS_PER_GROUP_DIMENSION),
 			FMath::DivideAndRoundUp(DrawParameters.GetRenderTargetSize().Y, NUM_THREADS_PER_GROUP_DIMENSION), 1));

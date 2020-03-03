@@ -1,5 +1,9 @@
 {
 	"RemapUnityFiles": 
 	{
+		"Module.GPUComputeFlocking.cpp.obj": [
+			"FlockingShader.cpp.obj",
+			"GPUComputeFlocking.cpp.obj"
+		]
 	}
 }

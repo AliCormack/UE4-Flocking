@@ -1,18 +1,29 @@
 
-#include "/Engine/Public/Platform.ush"
+struct TInfo
+{
+    int instanceId;
+    float3 position;
+    float3 velocity;
+    float3 acceleration;
+};
 
-// Simple pass-through vertex shader
-void MainVS(
- in float4 InPosition : ATTRIBUTE0,
- out float4 Output : SV_POSITION
-)
+RWTexture2D<uint> OutputTexture;
+float2 TextureSize;
+float Time;
+
+RWStructuredBuffer<float> data;
+
+[numthreads(THREADGROUPSIZE_X, THREADGROUPSIZE_Y, THREADGROUPSIZE_Z)]
+void MainComputeShader(uint3 ThreadId : SV_DispatchThreadID)
 {
-	Output = InPosition;
-}
- 
-// Simple solid color pixel shader
-float4 MyColor;
-float4 MainPS() : SV_Target0
-{
- return MyColor;
+	
+    //uint r = outputColor.r * 255.0;
+    //uint g = ((uint) (outputColor.g * 255.0)) << 8;
+    //uint b = ((uint) (outputColor.b * 255.0)) << 16;
+    //uint a = ((uint) (outputColor.a * 255.0)) << 24;
+	
+    //OutputTexture[ThreadId.xy] = r | g | b | a;
+    
+    data[0] = Time;
+
 }
