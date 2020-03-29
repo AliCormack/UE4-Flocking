@@ -13,23 +13,7 @@
 // This struct contains all the data we need to pass from the game thread to draw our effect.
 struct FShaderUsageExampleParameters
 {
-	UTextureRenderTarget2D* RenderTarget;
 	float Time;
-
-	FIntPoint GetRenderTargetSize() const
-	{
-		return CachedRenderTargetSize;
-	}
-
-	FShaderUsageExampleParameters() { }
-	FShaderUsageExampleParameters(UTextureRenderTarget2D* InRenderTarget)
-		: RenderTarget(InRenderTarget)
-		, Time(0)
-	{
-	}
-
-private:
-	FIntPoint CachedRenderTargetSize;
 };
 
 class FGPUComputeFlockingModule : public IModuleInterface

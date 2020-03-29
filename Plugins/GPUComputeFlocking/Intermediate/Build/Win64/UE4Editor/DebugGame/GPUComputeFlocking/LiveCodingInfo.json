@@ -3,7 +3,12 @@
 	{
 		"Module.GPUComputeFlocking.cpp.obj": [
 			"FlockingShader.cpp.obj",
-			"GPUComputeFlocking.cpp.obj"
+			"GPUComputeFlocking.cpp.obj",
+			"GPUFlockingController.cpp.obj"
+		],
+		"Module.GPUComputeFlocking.gen.cpp.obj": [
+			"GPUComputeFlocking.init.gen.cpp.obj",
+			"GPUFlockingController.gen.cpp.obj"
 		]
 	}
 }

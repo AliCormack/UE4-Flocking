@@ -26,17 +26,7 @@
 /we4668
 /I .
 /I C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUComputeFlocking\Source\GPUComputeFlocking\Private
-/I ..\Intermediate\Build\Win64\UE4Editor\Inc\CoreUObject
 /I Runtime
-/I Runtime\CoreUObject\Public
-/I Runtime\CoreUObject
-/I Runtime\CoreUObject\Public\Blueprint
-/I Runtime\CoreUObject\Public\Internationalization
-/I Runtime\CoreUObject\Public\Misc
-/I Runtime\CoreUObject\Public\Serialization
-/I Runtime\CoreUObject\Public\Serialization\Formatters
-/I Runtime\CoreUObject\Public\Templates
-/I Runtime\CoreUObject\Public\UObject
 /I Runtime\TraceLog\Public
 /I Runtime\Core\Public
 /I Runtime\Core
@@ -75,6 +65,16 @@
 /I Runtime\TraceLog
 /I Runtime\TraceLog\Public\Trace
 /I Runtime\TraceLog\Public\Trace\Detail
+/I ..\Intermediate\Build\Win64\UE4Editor\Inc\CoreUObject
+/I Runtime\CoreUObject\Public
+/I Runtime\CoreUObject
+/I Runtime\CoreUObject\Public\Blueprint
+/I Runtime\CoreUObject\Public\Internationalization
+/I Runtime\CoreUObject\Public\Misc
+/I Runtime\CoreUObject\Public\Serialization
+/I Runtime\CoreUObject\Public\Serialization\Formatters
+/I Runtime\CoreUObject\Public\Templates
+/I Runtime\CoreUObject\Public\UObject
 /I ..\Intermediate\Build\Win64\UE4Editor\Inc\Engine
 /I Runtime\Engine\Classes
 /I Runtime\Engine\Public

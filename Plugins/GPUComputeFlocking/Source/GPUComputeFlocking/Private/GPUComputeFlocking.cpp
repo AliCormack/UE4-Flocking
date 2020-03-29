@@ -2,7 +2,7 @@
 
 #include "GPUComputeFlocking.h"
 
-
+#include "FlockingShader.h"
 
 #include "Misc/Paths.h"
 #include "Misc/FileHelper.h"
@@ -92,10 +92,10 @@ void FGPUComputeFlockingModule::Draw_RenderThread(const FShaderUsageExampleParam
 {
 	check(IsInRenderingThread());
 
-	if (!DrawParameters.RenderTarget)
+	/*if (!DrawParameters.RenderTarget)
 	{
 		return;
-	}
+	}*/
 
 	FRHICommandListImmediate& RHICmdList = GRHICommandList.GetImmediateCommandList();
 
@@ -104,11 +104,11 @@ void FGPUComputeFlockingModule::Draw_RenderThread(const FShaderUsageExampleParam
 
 	if (!ComputeShaderOutput.IsValid())
 	{
-		FPooledRenderTargetDesc ComputeShaderOutputDesc(FPooledRenderTargetDesc::Create2DDesc(DrawParameters.GetRenderTargetSize(), PF_R32_UINT, FClearValueBinding::None, TexCreate_None, TexCreate_ShaderResource | TexCreate_UAV, false));
+		FPooledRenderTargetDesc ComputeShaderOutputDesc(FPooledRenderTargetDesc::Create2DDesc(FIntPoint(1, 1), PF_R32_UINT, FClearValueBinding::None, TexCreate_None, TexCreate_ShaderResource | TexCreate_UAV, false));
 		ComputeShaderOutputDesc.DebugName = TEXT("ShaderPlugin_ComputeShaderOutput");
 		GRenderTargetPool.FindFreeElement(RHICmdList, ComputeShaderOutputDesc, ComputeShaderOutput, TEXT("ShaderPlugin_ComputeShaderOutput"));
 	}
 
-	//FComputeShaderExample::RunComputeShader_RenderThread(RHICmdList, DrawParameters, ComputeShaderOutput->GetRenderTargetItem().UAV);
+	FFlockingShader::RunComputeShader_RenderThread(RHICmdList, DrawParameters, ComputeShaderOutput->GetRenderTargetItem().UAV);
 	//FPixelShaderExample::DrawToRenderTarget_RenderThread(RHICmdList, DrawParameters, ComputeShaderOutput->GetRenderTargetItem().TargetableTexture);
 }

@@ -522,6 +522,7 @@
 /I Runtime\ClothingSystemRuntimeInterface
 /I Runtime\AudioMixerCore\Public
 /I Runtime\AudioMixerCore
+/I C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUComputeFlocking\Intermediate\Build\Win64\UE4Editor\Inc\GPUComputeFlocking
 /I C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUComputeFlocking\Source
 /I C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUComputeFlocking\Source\GPUComputeFlocking\Public
 /I C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUComputeFlocking\Source\GPUComputeFlocking

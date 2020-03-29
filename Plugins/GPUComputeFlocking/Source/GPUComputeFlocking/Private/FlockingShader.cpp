@@ -56,6 +56,5 @@ void FFlockingShader::RunComputeShader_RenderThread(FRHICommandListImmediate& RH
 
 	TShaderMapRef<FFlockingShaderCS> ComputeShader(GetGlobalShaderMap(GMaxRHIFeatureLevel));
 	FComputeShaderUtils::Dispatch(RHICmdList, *ComputeShader, PassParameters,
-		FIntVector(FMath::DivideAndRoundUp(DrawParameters.GetRenderTargetSize().X, NUM_THREADS_PER_GROUP_DIMENSION),
-			FMath::DivideAndRoundUp(DrawParameters.GetRenderTargetSize().Y, NUM_THREADS_PER_GROUP_DIMENSION), 1));
+		FIntVector(1, 1, 1));
 }

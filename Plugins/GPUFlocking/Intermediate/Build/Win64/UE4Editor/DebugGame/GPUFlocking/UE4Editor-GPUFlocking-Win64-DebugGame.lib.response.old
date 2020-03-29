@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-GPUFlocking-Win64-DebugGame.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\corma\Documents\Projects\UE4-Flocking\Intermediate\Build\Win64\MyProjectEditor\DebugGame\Engine\SharedPCH.Engine.NonOptimized.h.obj"
+"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\DebugGame\GPUFlocking\GPUFlockingModule.cpp.obj"
+"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\DebugGame\GPUFlocking\Default.rc2.res"
+/OUT:"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\DebugGame\GPUFlocking\UE4Editor-GPUFlocking-Win64-DebugGame.lib"
+/INCLUDE:IMPLEMENT_MODULE_GPUFlocking

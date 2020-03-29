@@ -24,3 +24,6 @@ e:\extprogs\ue_4.24\engine\source\runtime\projects\public\ModuleDescriptor.h
 e:\extprogs\ue_4.24\engine\source\runtime\projects\public\CustomBuildSteps.h
 e:\extprogs\ue_4.24\engine\source\runtime\projects\public\LocalizationDescriptor.h
 e:\extprogs\ue_4.24\engine\source\runtime\projects\public\PluginReferenceDescriptor.h
+C:/Users/corma/Documents/Projects/UE4-Flocking/Plugins/GPUComputeFlocking/Source/GPUComputeFlocking/Private/GPUFlockingController.cpp
+C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUComputeFlocking\Source\GPUComputeFlocking\Public\GPUFlockingController.h
+C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUComputeFlocking\Intermediate\Build\Win64\UE4Editor\Inc\GPUComputeFlocking\GPUFlockingController.generated.h

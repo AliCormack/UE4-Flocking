@@ -1,0 +1,38 @@
+
+struct TInfo
+{
+    int instanceId;
+    float3 position;
+    float3 velocity;
+    float3 acceleration;
+};
+
+RWTexture2D<uint> OutputTexture;
+float2 TextureSize;
+//float Time;
+
+//RWStructuredBuffer<float> data;
+
+//each x,y,z of numthreads is multiplied by the respective DispatchShader x,y,z
+//So for 1024x1024 threads, we could do:
+//DispatchShader (32,32,1) in cpp
+//numthreads(32,32,1) in usf
+//equals (1024,1024,1)!
+//Then you can just use ThreadId.xy for each pixel without fancy math (using a 1024x1024 texture)
+[numthreads(256, 1, 1)]
+//If using more than 1,1,1, threads:
+//Be aware that parrellel thread are running, make sure that no thread can stomp on another threads calculations by
+//writing to the same buffer/texture point
+void MainComputeShader(uint3 ThreadId : SV_DispatchThreadID)
+{
+	
+    //uint r = outputColor.r * 255.0;
+    //uint g = ((uint) (outputColor.g * 255.0)) << 8;
+    //uint b = ((uint) (outputColor.b * 255.0)) << 16;
+    //uint a = ((uint) (outputColor.a * 255.0)) << 24;
+	
+    //OutputTexture[ThreadId.xy] = r | g | b | a;
+    
+    //data[0] = Time;
+
+}

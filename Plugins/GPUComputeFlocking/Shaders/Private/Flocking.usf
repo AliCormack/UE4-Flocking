@@ -24,6 +24,6 @@ void MainComputeShader(uint3 ThreadId : SV_DispatchThreadID)
 	
     //OutputTexture[ThreadId.xy] = r | g | b | a;
     
-    data[0] = Time;
+   // data[0] = Time;
 
 }
