@@ -24,15 +24,6 @@ float2 TextureSize;
 //Be aware that parrellel thread are running, make sure that no thread can stomp on another threads calculations by
 //writing to the same buffer/texture point
 void MainComputeShader(uint3 ThreadId : SV_DispatchThreadID)
-{
-	
-    //uint r = outputColor.r * 255.0;
-    //uint g = ((uint) (outputColor.g * 255.0)) << 8;
-    //uint b = ((uint) (outputColor.b * 255.0)) << 16;
-    //uint a = ((uint) (outputColor.a * 255.0)) << 24;
-	
-    //OutputTexture[ThreadId.xy] = r | g | b | a;
-    
-    //data[0] = Time;
-
+{	
+    OutputTexture[ThreadId.xy] = float4(0, 1, 0, 1); 
 }

@@ -15,6 +15,12 @@ void FGlobalComputeShader_Interface::SetParameters(
 	float simulationTime)
 {
 	check(IsInRenderingThread());
+
+	StepTotal_RA_.SetNum(1);
+	FMemory::Memcpy(StepTotal_RA_.GetData(), StepTotalDebug.GetData(), sizeof(float) * 1);
+	StepTotal_resource_.ResourceArray = &StepTotal_RA_;
+	StepTotal_buffer_ = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * 1, BUF_ShaderResource | BUF_UnorderedAccess, StepTotal_resource_);
+	StepTotal_UAV_ = RHICreateUnorderedAccessView(StepTotal_buffer_, /* bool bUseUAVCounter */ false, /* bool bAppendBuffer */ false);
 }
 
 void FGlobalComputeShader_Interface::Compute(
@@ -24,6 +30,11 @@ void FGlobalComputeShader_Interface::Compute(
 {
 	check(IsInRenderingThread());
 	
+	if (!RenderTarget)
+	{
+		return;
+	}
+
 	FRDGBuilder GraphBuilder(RHICmdList);
 
 
@@ -34,10 +45,7 @@ void FGlobalComputeShader_Interface::Compute(
 
 	PassParameters->simulationTime = simulationTime;
 	   	  
-	if (!RenderTarget)
-	{
-		return;
-	}
+	
 
 	FRDGTextureDesc OutputDesc;
 	OutputDesc.Extent.X = 512;
@@ -69,17 +77,17 @@ void FGlobalComputeShader_Interface::Compute(
 
 	GraphBuilder.Execute();
 	//Lock buffer to enable CPU read
-	/*char* shaderData = (char*)RHICmdList.LockStructuredBuffer(StepTotal_buffer_, 0, sizeof(float), EResourceLockMode::RLM_ReadOnly);
+	char* shaderData = (char*)RHICmdList.LockStructuredBuffer(StepTotal_buffer_, 0, sizeof(float), EResourceLockMode::RLM_ReadOnly);
 
 	const float* shader_data = (const float*)RHICmdList.LockStructuredBuffer(StepTotal_buffer_, 0, sizeof(float) * 1, EResourceLockMode::RLM_ReadOnly);
-	FMemory::Memcpy(StepTotalDebug.GetData(), shader_data, sizeof(float) * 1);*/
+	FMemory::Memcpy(StepTotalDebug.GetData(), shader_data, sizeof(float) * 1);
 
 	// Resolve render target
-	/*RHICmdList.CopyToResolveTarget(ComputeShaderOutput.GetReference()->GetRenderTargetItem().TargetableTexture, RenderTarget->GetRenderTargetResource()->TextureRHI, FResolveParams());
+	RHICmdList.CopyToResolveTarget(ComputeShaderOutput.GetReference()->GetRenderTargetItem().TargetableTexture, RenderTarget->GetRenderTargetResource()->TextureRHI, FResolveParams());
 
 
 
-	RHICmdList.UnlockStructuredBuffer(StepTotal_buffer_);*/
+	RHICmdList.UnlockStructuredBuffer(StepTotal_buffer_);
 
 	//UE_LOG(GPUFlockingShaderInterface, Display, TEXT("\n //////////////////////////// Step Total Debug  '%f'"), StepTotalDebug[0]);
 }

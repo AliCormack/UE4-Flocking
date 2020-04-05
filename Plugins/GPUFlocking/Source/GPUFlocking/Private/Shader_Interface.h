@@ -48,6 +48,12 @@ public:
 	//This is a reference to our data on the GPU, without it, we would need to pass the entire buffer to the GPU for our next itteration
 	// DATA HERE
 
+	TArray<float> StepTotalDebug = { 0 };
+	TResourceArray<float> StepTotal_RA_;
+	FRHIResourceCreateInfo StepTotal_resource_;
+	FStructuredBufferRHIRef StepTotal_buffer_;
+	FUnorderedAccessViewRHIRef StepTotal_UAV_;
+
 	TRefCountPtr<IPooledRenderTarget> ComputeShaderOutput;
 
 	//Send our data to the gpu, and do our first itteration

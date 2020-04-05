@@ -18,6 +18,8 @@ AGPUFlockingManager::AGPUFlockingManager(const FObjectInitializer& ObjectInitial
 void AGPUFlockingManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Setup();
 }
 
 void AGPUFlockingManager::BeginDestroy()
@@ -29,7 +31,7 @@ void AGPUFlockingManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
+	Calculate();
 }
 
 bool AGPUFlockingManager::Setup()
