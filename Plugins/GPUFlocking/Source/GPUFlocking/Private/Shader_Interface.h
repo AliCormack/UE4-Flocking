@@ -20,6 +20,7 @@ class FGlobalComputeShader_Interface : public FGlobalShader {
 	SHADER_USE_PARAMETER_STRUCT(FGlobalComputeShader_Interface, FGlobalShader)
 		BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
 		SHADER_PARAMETER(float, simulationTime)
+		SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, StepTotal)
 		SHADER_PARAMETER_RDG_TEXTURE_UAV(RWTexture2D<FVector4>, OutputTexture)
 	END_SHADER_PARAMETER_STRUCT()
 
@@ -31,11 +32,11 @@ class FGlobalComputeShader_Interface : public FGlobalShader {
 
 	static void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& PermutationParams, FShaderCompilerEnvironment& OutEnvironment) {
 		FGlobalShader::ModifyCompilationEnvironment(PermutationParams, OutEnvironment);
-		//OutEnvironment.CompilerFlags.Add(CFLAG_StandardOptimization);
-		////OutEnvironment.CompilerFlags.Add(CFLAG_OnChip);
-		//OutEnvironment.CompilerFlags.Add(CFLAG_PreferFlowControl);
-		//OutEnvironment.CompilerFlags.Add(CFLAG_Debug);
-		//OutEnvironment.CompilerFlags.Add(CFLAG_KeepDebugInfo);
+		OutEnvironment.CompilerFlags.Add(CFLAG_StandardOptimization);
+		//OutEnvironment.CompilerFlags.Add(CFLAG_OnChip);
+		OutEnvironment.CompilerFlags.Add(CFLAG_PreferFlowControl);
+		OutEnvironment.CompilerFlags.Add(CFLAG_Debug);
+		OutEnvironment.CompilerFlags.Add(CFLAG_KeepDebugInfo);
 	}
 
 	static bool ShouldCache(EShaderPlatform platform) {

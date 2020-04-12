@@ -1,5 +1,5 @@
 
-struct TInfo
+struct FState_GPU
 {
     int instanceId;
     float3 position;
@@ -8,8 +8,10 @@ struct TInfo
 };
 
 RWTexture2D<uint> OutputTexture;
-float2 TextureSize;
-//float Time;
+extern float simulationTime;
+precise extern RWStructuredBuffer<float> StepTotal;
+
+RWStructuredBuffer<TState> data;
 
 //RWStructuredBuffer<float> data;
 
@@ -19,11 +21,16 @@ float2 TextureSize;
 //numthreads(32,32,1) in usf
 //equals (1024,1024,1)!
 //Then you can just use ThreadId.xy for each pixel without fancy math (using a 1024x1024 texture)
-[numthreads(256, 1, 1)]
+[numthreads(16, 16, 1)]
 //If using more than 1,1,1, threads:
 //Be aware that parrellel thread are running, make sure that no thread can stomp on another threads calculations by
 //writing to the same buffer/texture point
 void MainComputeShader(uint3 ThreadId : SV_DispatchThreadID)
 {	
-    OutputTexture[ThreadId.xy] = float4(0, 1, 0, 1); 
+    float val = abs(sin(simulationTime));
+    
+    StepTotal[0] = 99.0f;
+    StepTotal[1] = 2.0f;
+    
+    OutputTexture[ThreadId.xy] = float4(val, 1, 0, 1);
 }

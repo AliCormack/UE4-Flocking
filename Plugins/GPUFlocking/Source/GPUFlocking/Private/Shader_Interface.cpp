@@ -6,6 +6,15 @@
 
 DEFINE_LOG_CATEGORY(GPUFlockingShaderInterface);
 
+// Must match flocking.usf::FState_GPU
+struct FState 
+{
+	int32 instanceId = 0;
+	float position[3] = { 0, 0, 0 };
+	float velocity[3] = { 0, 0, 0 };
+	float acceleration[3] = { 0, 0, 0 };
+};
+
 // This will tell the engine to create the shader and where the shader entry point is.
 //                            ShaderType                            ShaderPath                     Shader function name    Type
 IMPLEMENT_GLOBAL_SHADER(FGlobalComputeShader_Interface, "/Shaders/Private/Flocking.usf", "MainComputeShader", SF_Compute);
@@ -45,7 +54,14 @@ void FGlobalComputeShader_Interface::Compute(
 
 	PassParameters->simulationTime = simulationTime;
 	   	  
-	
+	//For debugging only
+	StepTotalDebug[0] = 0;
+	StepTotal_RA_.SetNum(1);
+	FMemory::Memcpy(StepTotal_RA_.GetData(), StepTotalDebug.GetData(), sizeof(float) * 1);
+	StepTotal_resource_.ResourceArray = &StepTotal_RA_;
+	StepTotal_buffer_ = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * 1, BUF_ShaderResource | BUF_UnorderedAccess, StepTotal_resource_);
+	StepTotal_UAV_ = RHICreateUnorderedAccessView(StepTotal_buffer_, /* bool bUseUAVCounter */ false, /* bool bAppendBuffer */ false);
+	PassParameters->StepTotal = StepTotal_UAV_;
 
 	FRDGTextureDesc OutputDesc;
 	OutputDesc.Extent.X = 512;
@@ -54,9 +70,9 @@ void FGlobalComputeShader_Interface::Compute(
 	OutputDesc.Format = PF_FloatRGBA;
 	OutputDesc.NumMips = 1;
 	//OutputDesc.Flags = TexCreate_ShaderResource;
-	OutputDesc.Flags = TexCreate_None;
+	//OutputDesc.Flags = TexCreate_None;
 	OutputDesc.TargetableFlags = TexCreate_ShaderResource | TexCreate_UAV;
-	OutputDesc.bForceSeparateTargetAndShaderResource = false;
+	//OutputDesc.bForceSeparateTargetAndShaderResource = false;
 
 
 	FRDGTextureRef HairLUTTexture = GraphBuilder.CreateTexture(OutputDesc, TEXT("HairLUT"));
@@ -77,7 +93,7 @@ void FGlobalComputeShader_Interface::Compute(
 
 	GraphBuilder.Execute();
 	//Lock buffer to enable CPU read
-	char* shaderData = (char*)RHICmdList.LockStructuredBuffer(StepTotal_buffer_, 0, sizeof(float), EResourceLockMode::RLM_ReadOnly);
+	//char* shaderData = (char*)RHICmdList.LockStructuredBuffer(StepTotal_buffer_, 0, sizeof(float), EResourceLockMode::RLM_ReadOnly);
 
 	const float* shader_data = (const float*)RHICmdList.LockStructuredBuffer(StepTotal_buffer_, 0, sizeof(float) * 1, EResourceLockMode::RLM_ReadOnly);
 	FMemory::Memcpy(StepTotalDebug.GetData(), shader_data, sizeof(float) * 1);

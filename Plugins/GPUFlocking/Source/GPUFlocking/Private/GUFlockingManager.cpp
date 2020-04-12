@@ -31,6 +31,8 @@ void AGPUFlockingManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	simulationTime += DeltaTime;
+
 	Calculate();
 }
 
