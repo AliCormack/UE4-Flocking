@@ -9,9 +9,9 @@ struct FState_GPU
 
 RWTexture2D<uint> OutputTexture;
 extern float simulationTime;
-precise extern RWStructuredBuffer<float> StepTotal;
+//precise extern RWStructuredBuffer<float> StepTotal;
 
-RWStructuredBuffer<TState> data;
+precise extern RWStructuredBuffer<FState_GPU> Data;
 
 //RWStructuredBuffer<float> data;
 
@@ -29,8 +29,21 @@ void MainComputeShader(uint3 ThreadId : SV_DispatchThreadID)
 {	
     float val = abs(sin(simulationTime));
     
-    StepTotal[0] = 99.0f;
-    StepTotal[1] = 2.0f;
+    FState_GPU state;
+    state.instanceId = 99;
+    state.position = float3(0, 1, 1);
+    state.velocity = float3(0, 1, 1);
+    state.acceleration = float3(0, 1, 1);
+    
+    Data[0] = state;
+    
+    FState_GPU state2;
+    state2.instanceId = 99;
+    state2.position = float3(0, 1, 1);
+    state2.velocity = float3(0, 1, 1);
+    state2.acceleration = float3(0, 1, 1);
+    
+    Data[1] = state2;
     
     OutputTexture[ThreadId.xy] = float4(val, 1, 0, 1);
 }

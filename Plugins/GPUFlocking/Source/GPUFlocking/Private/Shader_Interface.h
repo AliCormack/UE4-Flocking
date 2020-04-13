@@ -7,6 +7,15 @@
 
 #include "RenderGraph.h" //The only thing you need for RDG
 
+// Must match flocking.usf::FState_GPU
+struct FState
+{
+	int32 instanceId = 0;
+	float position[3] = { 0, 0, 0 };
+	float velocity[3] = { 0, 0, 0 };
+	float acceleration[3] = { 0, 0, 0 };
+};
+
 DECLARE_LOG_CATEGORY_EXTERN(GPUFlockingShaderInterface, Verbose, All);
 
 ///*****************************************************************************/
@@ -20,7 +29,7 @@ class FGlobalComputeShader_Interface : public FGlobalShader {
 	SHADER_USE_PARAMETER_STRUCT(FGlobalComputeShader_Interface, FGlobalShader)
 		BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
 		SHADER_PARAMETER(float, simulationTime)
-		SHADER_PARAMETER_UAV(RWStructuredBuffer<float>, StepTotal)
+		SHADER_PARAMETER_UAV(RWStructuredBuffer<FState>, Data)
 		SHADER_PARAMETER_RDG_TEXTURE_UAV(RWTexture2D<FVector4>, OutputTexture)
 	END_SHADER_PARAMETER_STRUCT()
 
@@ -49,11 +58,13 @@ public:
 	//This is a reference to our data on the GPU, without it, we would need to pass the entire buffer to the GPU for our next itteration
 	// DATA HERE
 
-	TArray<float> StepTotalDebug = { 0 };
+	/*TArray<float> StepTotalDebug = { 0 };
 	TResourceArray<float> StepTotal_RA_;
 	FRHIResourceCreateInfo StepTotal_resource_;
 	FStructuredBufferRHIRef StepTotal_buffer_;
-	FUnorderedAccessViewRHIRef StepTotal_UAV_;
+	FUnorderedAccessViewRHIRef StepTotal_UAV_;*/
+
+	TArray<FState> States;
 
 	TRefCountPtr<IPooledRenderTarget> ComputeShaderOutput;
 

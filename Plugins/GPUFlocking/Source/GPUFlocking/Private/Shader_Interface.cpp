@@ -6,14 +6,7 @@
 
 DEFINE_LOG_CATEGORY(GPUFlockingShaderInterface);
 
-// Must match flocking.usf::FState_GPU
-struct FState 
-{
-	int32 instanceId = 0;
-	float position[3] = { 0, 0, 0 };
-	float velocity[3] = { 0, 0, 0 };
-	float acceleration[3] = { 0, 0, 0 };
-};
+
 
 // This will tell the engine to create the shader and where the shader entry point is.
 //                            ShaderType                            ShaderPath                     Shader function name    Type
@@ -25,11 +18,11 @@ void FGlobalComputeShader_Interface::SetParameters(
 {
 	check(IsInRenderingThread());
 
-	StepTotal_RA_.SetNum(1);
-	FMemory::Memcpy(StepTotal_RA_.GetData(), StepTotalDebug.GetData(), sizeof(float) * 1);
-	StepTotal_resource_.ResourceArray = &StepTotal_RA_;
-	StepTotal_buffer_ = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * 1, BUF_ShaderResource | BUF_UnorderedAccess, StepTotal_resource_);
-	StepTotal_UAV_ = RHICreateUnorderedAccessView(StepTotal_buffer_, /* bool bUseUAVCounter */ false, /* bool bAppendBuffer */ false);
+	//StepTotal_RA_.SetNum(1);
+	//FMemory::Memcpy(StepTotal_RA_.GetData(), StepTotalDebug.GetData(), sizeof(float) * 1);
+	//StepTotal_resource_.ResourceArray = &StepTotal_RA_;
+	//StepTotal_buffer_ = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * 1, BUF_ShaderResource | BUF_UnorderedAccess, StepTotal_resource_);
+	//StepTotal_UAV_ = RHICreateUnorderedAccessView(StepTotal_buffer_, /* bool bUseUAVCounter */ false, /* bool bAppendBuffer */ false);
 }
 
 void FGlobalComputeShader_Interface::Compute(
@@ -55,13 +48,20 @@ void FGlobalComputeShader_Interface::Compute(
 	PassParameters->simulationTime = simulationTime;
 	   	  
 	//For debugging only
-	StepTotalDebug[0] = 0;
-	StepTotal_RA_.SetNum(1);
-	FMemory::Memcpy(StepTotal_RA_.GetData(), StepTotalDebug.GetData(), sizeof(float) * 1);
-	StepTotal_resource_.ResourceArray = &StepTotal_RA_;
-	StepTotal_buffer_ = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * 1, BUF_ShaderResource | BUF_UnorderedAccess, StepTotal_resource_);
-	StepTotal_UAV_ = RHICreateUnorderedAccessView(StepTotal_buffer_, /* bool bUseUAVCounter */ false, /* bool bAppendBuffer */ false);
-	PassParameters->StepTotal = StepTotal_UAV_;
+	//StepTotalDebug[0] = 0;
+	//StepTotal_RA_.SetNum(1);
+	//FMemory::Memcpy(StepTotal_RA_.GetData(), StepTotalDebug.GetData(), sizeof(float) * 1);
+	//StepTotal_resource_.ResourceArray = &StepTotal_RA_;
+	//StepTotal_buffer_ = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * 1, BUF_ShaderResource | BUF_UnorderedAccess, StepTotal_resource_);
+	//StepTotal_UAV_ = RHICreateUnorderedAccessView(StepTotal_buffer_, /* bool bUseUAVCounter */ false, /* bool bAppendBuffer */ false);
+	//PassParameters->StepTotal = StepTotal_UAV_;
+
+	const int FlockCount = 2;
+	FRHIResourceCreateInfo resource;
+	//resource.ResourceArray = &data;
+	FStructuredBufferRHIRef buffer = RHICreateStructuredBuffer(sizeof(FState), sizeof(FState) * FlockCount, BUF_ShaderResource | BUF_UnorderedAccess, resource);
+	FUnorderedAccessViewRHIRef uav = RHICreateUnorderedAccessView(buffer, false, false);
+	PassParameters->Data = uav;
 
 	FRDGTextureDesc OutputDesc;
 	OutputDesc.Extent.X = 512;
@@ -95,15 +95,25 @@ void FGlobalComputeShader_Interface::Compute(
 	//Lock buffer to enable CPU read
 	//char* shaderData = (char*)RHICmdList.LockStructuredBuffer(StepTotal_buffer_, 0, sizeof(float), EResourceLockMode::RLM_ReadOnly);
 
-	const float* shader_data = (const float*)RHICmdList.LockStructuredBuffer(StepTotal_buffer_, 0, sizeof(float) * 1, EResourceLockMode::RLM_ReadOnly);
-	FMemory::Memcpy(StepTotalDebug.GetData(), shader_data, sizeof(float) * 1);
+	char* shader_data = (char*)RHICmdList.LockStructuredBuffer(buffer, 0, sizeof(FState) * FlockCount, EResourceLockMode::RLM_ReadOnly);
+	
+	TArray<FState> result;
+	result.Reserve(FlockCount);
+
+	FState* p = (FState*)shader_data;
+	for (int32 Row = 0; Row < FlockCount; ++Row) {
+		result.Add(*p);
+		p++;
+	}
+
+	//FMemory::Memcpy(States.GetData(), shader_data, sizeof(FState) * 1);
 
 	// Resolve render target
-	RHICmdList.CopyToResolveTarget(ComputeShaderOutput.GetReference()->GetRenderTargetItem().TargetableTexture, RenderTarget->GetRenderTargetResource()->TextureRHI, FResolveParams());
+	//RHICmdList.CopyToResolveTarget(ComputeShaderOutput.GetReference()->GetRenderTargetItem().TargetableTexture, RenderTarget->GetRenderTargetResource()->TextureRHI, FResolveParams());
 
 
 
-	RHICmdList.UnlockStructuredBuffer(StepTotal_buffer_);
+	RHICmdList.UnlockStructuredBuffer(buffer);
 
 	//UE_LOG(GPUFlockingShaderInterface, Display, TEXT("\n //////////////////////////// Step Total Debug  '%f'"), StepTotalDebug[0]);
 }
