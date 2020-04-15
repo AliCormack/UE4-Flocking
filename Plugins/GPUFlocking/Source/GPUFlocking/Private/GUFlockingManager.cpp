@@ -33,7 +33,7 @@ void AGPUFlockingManager::Tick(float DeltaTime)
 
 	simulationTime += DeltaTime;
 
-	Calculate();
+	Calculate(DeltaTime);
 }
 
 bool AGPUFlockingManager::Setup()
@@ -55,21 +55,19 @@ bool AGPUFlockingManager::Setup()
 	return true;
 }
 
-bool AGPUFlockingManager::Calculate()
+bool AGPUFlockingManager::Calculate(float DeltaTime)
 {	
 	FRHICommandListImmediate& RHICmdList = GRHICommandList.GetImmediateCommandList();
 
 	TShaderMap<FGlobalShaderType>* GlobalShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
 	TShaderMapRef< FGlobalComputeShader_Interface > ComputeShader(GlobalShaderMap);
-
-	float simulationTime_out = simulationTime;
-
+	
 	UTextureRenderTarget2D* RenderTarget_Output_out = RenderTarget_Output;
 
 	ENQUEUE_RENDER_COMMAND(WeatherCompute)(
-		[ComputeShader, simulationTime_out, RenderTarget_Output_out](FRHICommandListImmediate& RHICmdList)
+		[ComputeShader, DeltaTime, RenderTarget_Output_out](FRHICommandListImmediate& RHICmdList)
 	{
-		ComputeShader->Compute(RHICmdList, simulationTime_out, RenderTarget_Output_out);
+		ComputeShader->Compute(RHICmdList, DeltaTime, RenderTarget_Output_out);
 	});
 
 	return true;

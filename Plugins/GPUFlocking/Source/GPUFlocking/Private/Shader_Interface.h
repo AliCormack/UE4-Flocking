@@ -7,6 +7,8 @@
 
 #include "RenderGraph.h" //The only thing you need for RDG
 
+#include "Containers/DynamicRHIResourceArray.h" // Core module
+
 // Must match flocking.usf::FState_GPU
 struct FState
 {
@@ -28,9 +30,9 @@ class FGlobalComputeShader_Interface : public FGlobalShader {
 	
 	SHADER_USE_PARAMETER_STRUCT(FGlobalComputeShader_Interface, FGlobalShader)
 		BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
-		SHADER_PARAMETER(float, simulationTime)
+		SHADER_PARAMETER(float, DeltaTime)
 		SHADER_PARAMETER_UAV(RWStructuredBuffer<FState>, Data)
-		SHADER_PARAMETER_RDG_TEXTURE_UAV(RWTexture2D<FVector4>, OutputTexture)
+		//SHADER_PARAMETER_RDG_TEXTURE_UAV(RWTexture2D<FVector4>, OutputTexture)
 	END_SHADER_PARAMETER_STRUCT()
 
 	//Don't compile for a platform we don't support.
@@ -64,7 +66,9 @@ public:
 	FStructuredBufferRHIRef StepTotal_buffer_;
 	FUnorderedAccessViewRHIRef StepTotal_UAV_;*/
 
-	TArray<FState> States;
+	TResourceArray<FState> States;
+
+	int FlockCount = 10;
 
 	TRefCountPtr<IPooledRenderTarget> ComputeShaderOutput;
 

@@ -26,7 +26,7 @@ public:
 	bool Setup();
 
 	UFUNCTION(BlueprintCallable)
-	bool Calculate();
+	bool Calculate(float DeltaTime);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UTextureRenderTarget2D* RenderTarget_Output;

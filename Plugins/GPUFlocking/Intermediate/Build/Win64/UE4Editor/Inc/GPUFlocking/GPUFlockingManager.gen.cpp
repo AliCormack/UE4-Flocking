@@ -34,10 +34,12 @@ void EmptyLinkFunctionForGeneratedCodeGPUFlockingManager() {}
 	{
 		struct GPUFlockingManager_eventCalculate_Parms
 		{
+			float DeltaTime;
 			bool ReturnValue;
 		};
 		static void NewProp_ReturnValue_SetBit(void* Obj);
 		static const UE4CodeGen_Private::FBoolPropertyParams NewProp_ReturnValue;
+		static const UE4CodeGen_Private::FFloatPropertyParams NewProp_DeltaTime;
 		static const UE4CodeGen_Private::FPropertyParamsBase* const PropPointers[];
 #if WITH_METADATA
 		static const UE4CodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
@@ -49,8 +51,10 @@ void EmptyLinkFunctionForGeneratedCodeGPUFlockingManager() {}
 		((GPUFlockingManager_eventCalculate_Parms*)Obj)->ReturnValue = 1;
 	}
 	const UE4CodeGen_Private::FBoolPropertyParams Z_Construct_UFunction_AGPUFlockingManager_Calculate_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UE4CodeGen_Private::EPropertyGenFlags::Bool | UE4CodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, 1, sizeof(bool), sizeof(GPUFlockingManager_eventCalculate_Parms), &Z_Construct_UFunction_AGPUFlockingManager_Calculate_Statics::NewProp_ReturnValue_SetBit, METADATA_PARAMS(nullptr, 0) };
+	const UE4CodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_AGPUFlockingManager_Calculate_Statics::NewProp_DeltaTime = { "DeltaTime", nullptr, (EPropertyFlags)0x0010000000000080, UE4CodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(GPUFlockingManager_eventCalculate_Parms, DeltaTime), METADATA_PARAMS(nullptr, 0) };
 	const UE4CodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_AGPUFlockingManager_Calculate_Statics::PropPointers[] = {
 		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_AGPUFlockingManager_Calculate_Statics::NewProp_ReturnValue,
+		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_AGPUFlockingManager_Calculate_Statics::NewProp_DeltaTime,
 	};
 #if WITH_METADATA
 	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_AGPUFlockingManager_Calculate_Statics::Function_MetaDataParams[] = {
@@ -132,7 +136,7 @@ void EmptyLinkFunctionForGeneratedCodeGPUFlockingManager() {}
 		(UObject* (*)())Z_Construct_UPackage__Script_GPUFlocking,
 	};
 	const FClassFunctionLinkInfo Z_Construct_UClass_AGPUFlockingManager_Statics::FuncInfo[] = {
-		{ &Z_Construct_UFunction_AGPUFlockingManager_Calculate, "Calculate" }, // 2147268302
+		{ &Z_Construct_UFunction_AGPUFlockingManager_Calculate, "Calculate" }, // 1685376087
 		{ &Z_Construct_UFunction_AGPUFlockingManager_Setup, "Setup" }, // 2144844264
 	};
 #if WITH_METADATA
@@ -189,7 +193,7 @@ void EmptyLinkFunctionForGeneratedCodeGPUFlockingManager() {}
 		}
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AGPUFlockingManager, 3337705887);
+	IMPLEMENT_CLASS(AGPUFlockingManager, 3862434889);
 	template<> GPUFLOCKING_API UClass* StaticClass<AGPUFlockingManager>()
 	{
 		return AGPUFlockingManager::StaticClass();

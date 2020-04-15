@@ -1,4 +1,7 @@
 
+#define FlockCount 10;
+#define CalculationsPerThread 1;
+
 struct FState_GPU
 {
     int instanceId;
@@ -7,13 +10,16 @@ struct FState_GPU
     float3 acceleration;
 };
 
-RWTexture2D<uint> OutputTexture;
-extern float simulationTime;
+//RWTexture2D<uint> OutputTexture;
+extern float DeltaTime;
 //precise extern RWStructuredBuffer<float> StepTotal;
 
 precise extern RWStructuredBuffer<FState_GPU> Data;
 
-//RWStructuredBuffer<float> data;
+float getDistance(float3 v1, float3 v2)
+{
+    return sqrt((v2[0] - v1[0]) * (v2[0] - v1[0]) + (v2[1] - v1[1]) * (v2[1] - v1[1]) + (v2[2] - v1[2]) * (v2[2] - v1[2]));
+}
 
 //each x,y,z of numthreads is multiplied by the respective DispatchShader x,y,z
 //So for 1024x1024 threads, we could do:
@@ -21,29 +27,131 @@ precise extern RWStructuredBuffer<FState_GPU> Data;
 //numthreads(32,32,1) in usf
 //equals (1024,1024,1)!
 //Then you can just use ThreadId.xy for each pixel without fancy math (using a 1024x1024 texture)
-[numthreads(16, 16, 1)]
+[numthreads(1, 128, 1)]
 //If using more than 1,1,1, threads:
 //Be aware that parrellel thread are running, make sure that no thread can stomp on another threads calculations by
 //writing to the same buffer/texture point
 void MainComputeShader(uint3 ThreadId : SV_DispatchThreadID)
 {	
-    float val = abs(sin(simulationTime));
+    //float val = abs(sin(simulationTime));
     
-    FState_GPU state;
-    state.instanceId = 99;
-    state.position = float3(0, 1, 1);
-    state.velocity = float3(0, 1, 1);
-    state.acceleration = float3(0, 1, 1);
+    //FState_GPU state;
+    //state.instanceId = 99;
+    //state.position = float3(0, 1, 1);
+    //state.velocity = float3(0, 1, 1);
+    //state.acceleration = float3(0, 1, 1);
     
-    Data[0] = state;
+    //Data[0] = state;
     
-    FState_GPU state2;
-    state2.instanceId = 99;
-    state2.position = float3(0, 1, 1);
-    state2.velocity = float3(0, 1, 1);
-    state2.acceleration = float3(0, 1, 1);
+    //FState_GPU state2;
+    //state2.instanceId = 99;
+    //state2.position = float3(0, 1, 1);
+    //state2.velocity = float3(0, 1, 1);
+    //state2.acceleration = float3(0, 1, 1);
     
-    Data[1] = state2;
+    //Data[1] = state2;
+     //OutputTexture[ThreadId.xy] = float4(val, 1, 0, 1);
     
-    OutputTexture[ThreadId.xy] = float4(val, 1, 0, 1);
+    int fishCount = FlockCount;
+    int calculationsPerThread = CalculationsPerThread;
+    float radiusCohesion = 1000;
+    float radiusSeparation = 120;
+    float radiusAlignment = 240;
+    float kCohesion = 100;
+    float kSeparation = 1;
+    float kAlignment = 20;
+    float maxAcceleration = 1500;
+    float maxVelocity = 2500;
+    float mapRangeX = 20000;
+    float mapRangeY = 20000;
+    float mapRangeZ = 20000;
+	
+    for (int iteration = 0; iteration < calculationsPerThread; iteration++)
+    {
+        int currentThreadId = calculationsPerThread * ThreadId.y + iteration;
+		
+        if (currentThreadId >= fishCount)
+            return;
+			
+        int currentId = fishCount + currentThreadId;
+        FState_GPU currentState = Data[currentThreadId + fishCount];
+        FState_GPU newState = Data[currentThreadId];
+	
+        float3 steerCohesion = { 0.0f, 0.0f, 0.0f };
+        float3 steerSeparation = { 0.0f, 0.0f, 0.0f };
+        float3 steerAlignment = { 0.0f, 0.0f, 0.0f };
+	
+        float steerCohesionCnt = 0.0f;
+        float steerSeparationCnt = 0.0f;
+        float steerAlignmentCnt = 0.0f;
+	
+        for (int i = fishCount; i < 2 * fishCount; i++)
+        {
+            if (i != currentId)
+            {
+                float d = getDistance(Data[i].position, currentState.position);
+                if (d < radiusCohesion)
+                {
+                    steerCohesion += Data[i].position;
+                    steerCohesionCnt++;
+                }
+                if (d < radiusSeparation)
+                {
+                    steerSeparation += Data[i].position - currentState.position;
+                    steerSeparationCnt++;
+                }
+                if (d < radiusAlignment)
+                {
+                    steerAlignment += Data[i].velocity;
+                    steerAlignmentCnt++;
+                }
+            }
+        }
+
+        if (steerCohesionCnt != 0)
+        {
+            steerCohesion = (steerCohesion / steerCohesionCnt - currentState.position);
+            steerCohesion = normalize(steerCohesion);
+        }
+
+        if (steerSeparationCnt != 0)
+        {
+            steerSeparation = -1.f * (steerSeparation / steerSeparationCnt);
+            steerSeparation = normalize(steerSeparation);
+        }
+
+        if (steerAlignmentCnt != 0)
+        {
+            steerAlignment /= steerAlignmentCnt;
+            steerAlignment = normalize(steerAlignment);
+        }
+	
+        newState.acceleration = (steerCohesion * kCohesion + steerSeparation * kSeparation + steerAlignment * kAlignment);
+        newState.acceleration = clamp(newState.acceleration, -1.0f * maxAcceleration, maxAcceleration);
+        newState.acceleration[2] = 0.0f;
+	
+        newState.velocity += newState.acceleration * DeltaTime;
+        newState.velocity = clamp(newState.velocity, -1.0f * maxVelocity, maxVelocity);
+	
+        newState.position += newState.velocity * DeltaTime;
+
+        float3 newVelocity = newState.velocity;
+        if (newState.position[0] > mapRangeX || newState.position[0] < -mapRangeX)
+        {
+            newVelocity[0] *= -1.f;
+        }
+
+        if (newState.position[1] > mapRangeY || newState.position[1] < -mapRangeY)
+        {
+            newVelocity[1] *= -1.f;
+        }
+
+        if (newState.position[2] > mapRangeZ || newState.position[2] < -3000.f)
+        {
+            newVelocity[2] *= -1.f;
+        }
+        newState.velocity = newVelocity;
+	
+        Data[currentThreadId] = newState;
+    }
 }
