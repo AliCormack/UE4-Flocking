@@ -21,7 +21,7 @@ void EmptyLinkFunctionForGeneratedCodeGPUFlocking_init() {}
 				nullptr,
 				0,
 				PKG_CompiledIn | 0x00000000,
-				0xCF457652,
+				0x01D7485E,
 				0x3EF78698,
 				METADATA_PARAMS(nullptr, 0)
 			};

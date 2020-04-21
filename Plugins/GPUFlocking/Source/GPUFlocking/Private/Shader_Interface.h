@@ -10,7 +10,7 @@
 #include "Containers/DynamicRHIResourceArray.h" // Core module
 
 // Must match flocking.usf::FState_GPU
-struct FState
+struct FAgentState
 {
 	int32 instanceId = 0;
 	float position[3] = { 0, 0, 0 };
@@ -27,11 +27,27 @@ DECLARE_LOG_CATEGORY_EXTERN(GPUFlockingShaderInterface, Verbose, All);
 class FGlobalComputeShader_Interface : public FGlobalShader {
 
 	DECLARE_GLOBAL_SHADER(FGlobalComputeShader_Interface)
+
+	/*BEGIN_UNIFORM_BUFFER_STRUCT(FConstantParameters, )
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(int, fishCount)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, radiusCohesion)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, radiusSeparation)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, radiusAlignment)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, mapRangeX)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, mapRangeY)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, mapRangeZ)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, kCohesion)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, kSeparation)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, kAlignment)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, maxAcceleration)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(float, maxVelocity)
+		DECLARE_UNIFORM_BUFFER_STRUCT_MEMBER(int, calculationsPerThread)
+	END_UNIFORM_BUFFER_STRUCT(FConstantParameters)*/
 	
 	SHADER_USE_PARAMETER_STRUCT(FGlobalComputeShader_Interface, FGlobalShader)
 		BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
 		SHADER_PARAMETER(float, DeltaTime)
-		SHADER_PARAMETER_UAV(RWStructuredBuffer<FState>, Data)
+		SHADER_PARAMETER_UAV(RWStructuredBuffer<FAgentState>, Data)
 		//SHADER_PARAMETER_RDG_TEXTURE_UAV(RWTexture2D<FVector4>, OutputTexture)
 	END_SHADER_PARAMETER_STRUCT()
 
@@ -66,22 +82,20 @@ public:
 	FStructuredBufferRHIRef StepTotal_buffer_;
 	FUnorderedAccessViewRHIRef StepTotal_UAV_;*/
 
-	TResourceArray<FState> States;
+	//TResourceArray<FAgentState> States;
 
 	int FlockCount = 10;
 
 	TRefCountPtr<IPooledRenderTarget> ComputeShaderOutput;
 
 	//Send our data to the gpu, and do our first itteration
-	void SetParameters(
-		FRHICommandListImmediate& RHICmdList,
-		float simulationTime);
+	void SetParameters(FRHICommandListImmediate& RHICmdList);
 
 	//Data is already on GPU, do a single itteration
 	void Compute(
 		FRHICommandListImmediate& RHICmdList,
 		float simulationTime,
-		UTextureRenderTarget2D* RenderTarget
-	);
+		const TArray<FAgentState>& CurrentStates,
+		TArray<FAgentState>& OutputStates);
 };
 

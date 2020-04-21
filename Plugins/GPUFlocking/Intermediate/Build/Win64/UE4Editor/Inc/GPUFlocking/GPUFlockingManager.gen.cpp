@@ -19,7 +19,7 @@ void EmptyLinkFunctionForGeneratedCodeGPUFlockingManager() {}
 	UPackage* Z_Construct_UPackage__Script_GPUFlocking();
 	GPUFLOCKING_API UFunction* Z_Construct_UFunction_AGPUFlockingManager_Calculate();
 	GPUFLOCKING_API UFunction* Z_Construct_UFunction_AGPUFlockingManager_Setup();
-	ENGINE_API UClass* Z_Construct_UClass_UTextureRenderTarget2D_NoRegister();
+	ENGINE_API UClass* Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister();
 // End Cross Module References
 	void AGPUFlockingManager::StaticRegisterNativesAGPUFlockingManager()
 	{
@@ -120,13 +120,9 @@ void EmptyLinkFunctionForGeneratedCodeGPUFlockingManager() {}
 		static const UE4CodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
 #if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_simulationTime_MetaData[];
+		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_HierarchicalInstancedStaticMeshComponent_MetaData[];
 #endif
-		static const UE4CodeGen_Private::FFloatPropertyParams NewProp_simulationTime;
-#if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_RenderTarget_Output_MetaData[];
-#endif
-		static const UE4CodeGen_Private::FObjectPropertyParams NewProp_RenderTarget_Output;
+		static const UE4CodeGen_Private::FObjectPropertyParams NewProp_HierarchicalInstancedStaticMeshComponent;
 		static const UE4CodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UE4CodeGen_Private::FClassParams ClassParams;
@@ -149,22 +145,15 @@ void EmptyLinkFunctionForGeneratedCodeGPUFlockingManager() {}
 	};
 #endif
 #if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_simulationTime_MetaData[] = {
+	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_HierarchicalInstancedStaticMeshComponent_MetaData[] = {
 		{ "Category", "GPUFlockingManager" },
+		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/GPUFlockingManager.h" },
 	};
 #endif
-	const UE4CodeGen_Private::FFloatPropertyParams Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_simulationTime = { "simulationTime", nullptr, (EPropertyFlags)0x0010000000000005, UE4CodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(AGPUFlockingManager, simulationTime), METADATA_PARAMS(Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_simulationTime_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_simulationTime_MetaData)) };
-#if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_RenderTarget_Output_MetaData[] = {
-		{ "Category", "GPUFlockingManager" },
-		{ "ModuleRelativePath", "Public/GPUFlockingManager.h" },
-	};
-#endif
-	const UE4CodeGen_Private::FObjectPropertyParams Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_RenderTarget_Output = { "RenderTarget_Output", nullptr, (EPropertyFlags)0x0010000000000005, UE4CodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(AGPUFlockingManager, RenderTarget_Output), Z_Construct_UClass_UTextureRenderTarget2D_NoRegister, METADATA_PARAMS(Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_RenderTarget_Output_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_RenderTarget_Output_MetaData)) };
+	const UE4CodeGen_Private::FObjectPropertyParams Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_HierarchicalInstancedStaticMeshComponent = { "HierarchicalInstancedStaticMeshComponent", nullptr, (EPropertyFlags)0x00100000000a001d, UE4CodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(AGPUFlockingManager, HierarchicalInstancedStaticMeshComponent), Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_HierarchicalInstancedStaticMeshComponent_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_HierarchicalInstancedStaticMeshComponent_MetaData)) };
 	const UE4CodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_AGPUFlockingManager_Statics::PropPointers[] = {
-		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_simulationTime,
-		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_RenderTarget_Output,
+		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_AGPUFlockingManager_Statics::NewProp_HierarchicalInstancedStaticMeshComponent,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_AGPUFlockingManager_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<AGPUFlockingManager>::IsAbstract,
@@ -193,7 +182,7 @@ void EmptyLinkFunctionForGeneratedCodeGPUFlockingManager() {}
 		}
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AGPUFlockingManager, 3862434889);
+	IMPLEMENT_CLASS(AGPUFlockingManager, 984764008);
 	template<> GPUFLOCKING_API UClass* StaticClass<AGPUFlockingManager>()
 	{
 		return AGPUFlockingManager::StaticClass();

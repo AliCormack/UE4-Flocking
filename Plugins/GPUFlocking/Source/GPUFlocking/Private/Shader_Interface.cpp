@@ -11,9 +11,7 @@ DEFINE_LOG_CATEGORY(GPUFlockingShaderInterface);
 //                            ShaderType                            ShaderPath                     Shader function name    Type
 IMPLEMENT_GLOBAL_SHADER(FGlobalComputeShader_Interface, "/Shaders/Private/Flocking.usf", "MainComputeShader", SF_Compute);
 
-void FGlobalComputeShader_Interface::SetParameters(
-	FRHICommandListImmediate& RHICmdList,
-	float simulationTime)
+void FGlobalComputeShader_Interface::SetParameters(FRHICommandListImmediate& RHICmdList)
 {
 	check(IsInRenderingThread());
 
@@ -23,34 +21,18 @@ void FGlobalComputeShader_Interface::SetParameters(
 	//StepTotal_buffer_ = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * 1, BUF_ShaderResource | BUF_UnorderedAccess, StepTotal_resource_);
 	//StepTotal_UAV_ = RHICreateUnorderedAccessView(StepTotal_buffer_, /* bool bUseUAVCounter */ false, /* bool bAppendBuffer */ false);
 
-	for (int i = 0; i < FlockCount; i++)
-	{
-		float m_spawningRange = 1000;
-		FVector randomPos(FMath::RandRange(-m_spawningRange, m_spawningRange),
-			FMath::RandRange(-m_spawningRange * m_mapSize.Y, m_spawningRange),
-			FMath::RandRange(m_spawningRange * m_oceanFloorZ, m_mapSize.Z * m_spawningRange));
-		FRotator randRotator(0, FMath::RandRange(0, 360), 0);
-
-		FState state;
-		state.instanceId = i;
-		States.Add(state);
-	}	
+	
 }
 
 void FGlobalComputeShader_Interface::Compute(
 	FRHICommandListImmediate& RHICmdList,	
 	float simulationTime,
-	UTextureRenderTarget2D* RenderTarget)
+	const TArray<FAgentState>& CurrentStates,
+	TArray<FAgentState>& OutputStates)
 {
 	check(IsInRenderingThread());
-	
-	if (!RenderTarget)
-	{
-		return;
-	}
 
 	FRDGBuilder GraphBuilder(RHICmdList);
-
 
 	//We need to re-create FParams every itteration
 	FParameters* PassParameters;
@@ -69,17 +51,17 @@ void FGlobalComputeShader_Interface::Compute(
 	//PassParameters->StepTotal = StepTotal_UAV_;	
 	
 	// First half of array is for new state data to be written to, latter half is for reading data.
-	TResourceArray<FState> data;
+	TResourceArray<FAgentState> data;
 	for (int i = 0; i < FlockCount; i++) {
-		data.Add(States[i]);
+		data.Add(CurrentStates[i]);
 	}
 	for (int i = 0; i < FlockCount; i++) {
-		data.Add(States[i]);
+		data.Add(CurrentStates[i]);
 	}
 
 	FRHIResourceCreateInfo resource;
 	resource.ResourceArray = &data;
-	FStructuredBufferRHIRef buffer = RHICreateStructuredBuffer(sizeof(FState), sizeof(FState) * FlockCount * 2, BUF_ShaderResource | BUF_UnorderedAccess, resource);
+	FStructuredBufferRHIRef buffer = RHICreateStructuredBuffer(sizeof(FAgentState), sizeof(FAgentState) * FlockCount * 2, BUF_ShaderResource | BUF_UnorderedAccess, resource);
 	FUnorderedAccessViewRHIRef uav = RHICreateUnorderedAccessView(buffer, false, false);
 	PassParameters->Data = uav;
 
@@ -115,19 +97,19 @@ void FGlobalComputeShader_Interface::Compute(
 	//Lock buffer to enable CPU read
 	//char* shaderData = (char*)RHICmdList.LockStructuredBuffer(StepTotal_buffer_, 0, sizeof(float), EResourceLockMode::RLM_ReadOnly);
 
-	char* shader_data = (char*)RHICmdList.LockStructuredBuffer(buffer, 0, sizeof(FState) * FlockCount * 2, EResourceLockMode::RLM_ReadOnly);
+	char* shader_data = (char*)RHICmdList.LockStructuredBuffer(buffer, 0, sizeof(FAgentState) * FlockCount * 2, EResourceLockMode::RLM_ReadOnly);
 	
-	TArray<FState> result;
+	TArray<FAgentState> result;
 	result.Reserve(FlockCount);
 
-	FState* p = (FState*)shader_data;
+	FAgentState* p = (FAgentState*)shader_data;
 	for (int32 Row = 0; Row < FlockCount; ++Row) {
 		result.Add(*p);
-		States[Row] = *p;
+		OutputStates[Row] = *p;
 		p++;
 	}
 
-	//FMemory::Memcpy(States.GetData(), shader_data, sizeof(FState) * 1);
+	//FMemory::Memcpy(States.GetData(), shader_data, sizeof(FAgentState) * 1);
 
 	// Resolve render target
 	//RHICmdList.CopyToResolveTarget(ComputeShaderOutput.GetReference()->GetRenderTargetItem().TargetableTexture, RenderTarget->GetRenderTargetResource()->TextureRHI, FResolveParams());

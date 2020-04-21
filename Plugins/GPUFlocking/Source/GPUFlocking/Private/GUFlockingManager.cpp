@@ -1,6 +1,5 @@
 #pragma once
 #include "GPUFlockingManager.h"
-#include "Shader_Interface.h"
 
 #include "GenerateMips.h"
 #include "RenderGraph.h"
@@ -11,7 +10,9 @@ DEFINE_LOG_CATEGORY(GPUFlocking);
 
 AGPUFlockingManager::AGPUFlockingManager(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	HierarchicalInstancedStaticMeshComponent = ObjectInitializer.CreateDefaultSubobject<UHierarchicalInstancedStaticMeshComponent>(this, TEXT("HierarchicalInstancedStaticMeshComponent"));
+	RootComponent = HierarchicalInstancedStaticMeshComponent;
+
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -31,24 +32,45 @@ void AGPUFlockingManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	simulationTime += DeltaTime;
-
 	Calculate(DeltaTime);
 }
 
 bool AGPUFlockingManager::Setup()
 {
+	for (int i = 0; i < FlockCount; i++)
+	{
+		const float m_spawningRange = 1000;
+		FVector randomPos(
+			FMath::RandRange(-m_spawningRange, m_spawningRange),
+			FMath::RandRange(-m_spawningRange, m_spawningRange),
+			FMath::RandRange(-m_spawningRange, m_spawningRange));
+
+		FRotator randRotator(0, FMath::RandRange(0, 360), 0);
+		auto Velocity = randRotator.Vector();
+
+		FAgentState state;
+
+		state.position[0] = randomPos.X;
+		state.position[1] = randomPos.Y;
+		state.position[2] = randomPos.Z;
+
+		state.velocity[0] = Velocity.X;
+		state.velocity[1] = Velocity.Y;
+		state.velocity[2] = Velocity.Z;
+
+		state.instanceId = i;
+		AgentStates.Add(state);
+	}
+
 	FRHICommandListImmediate& RHICmdList = GRHICommandList.GetImmediateCommandList();
 
 	TShaderMap<FGlobalShaderType>* GlobalShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
 	TShaderMapRef< FGlobalComputeShader_Interface > ComputeShader(GlobalShaderMap);
 
-	float simulationTime_out = simulationTime;
-
-	ENQUEUE_RENDER_COMMAND(WeatherCompute)(
-		[ComputeShader, simulationTime_out](FRHICommandListImmediate& RHICmdList)
+	ENQUEUE_RENDER_COMMAND(FlockCompute)(
+		[ComputeShader](FRHICommandListImmediate& RHICmdList)
 	{
-		ComputeShader->SetParameters(RHICmdList, simulationTime_out);
+		ComputeShader->SetParameters(RHICmdList);
 	});
 
 
@@ -61,13 +83,19 @@ bool AGPUFlockingManager::Calculate(float DeltaTime)
 
 	TShaderMap<FGlobalShaderType>* GlobalShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
 	TShaderMapRef< FGlobalComputeShader_Interface > ComputeShader(GlobalShaderMap);
-	
-	UTextureRenderTarget2D* RenderTarget_Output_out = RenderTarget_Output;
 
-	ENQUEUE_RENDER_COMMAND(WeatherCompute)(
-		[ComputeShader, DeltaTime, RenderTarget_Output_out](FRHICommandListImmediate& RHICmdList)
+	auto CurrentStates = AgentStates;
+	TArray<FAgentState> ResultStates;
+
+	for (int i = 0; i < FlockCount; i++)
 	{
-		ComputeShader->Compute(RHICmdList, DeltaTime, RenderTarget_Output_out);
+		ResultStates.Add(FAgentState());
+	}
+
+	ENQUEUE_RENDER_COMMAND(FlockCompute)(
+		[ComputeShader, DeltaTime, CurrentStates, &ResultStates](FRHICommandListImmediate& RHICmdList)
+	{
+		ComputeShader->Compute(RHICmdList, DeltaTime, CurrentStates, ResultStates);
 	});
 
 	return true;
