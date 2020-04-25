@@ -82,9 +82,9 @@ public:
 	FStructuredBufferRHIRef StepTotal_buffer_;
 	FUnorderedAccessViewRHIRef StepTotal_UAV_;*/
 
-	//TResourceArray<FAgentState> States;
+	TArray<FAgentState> States;
 
-	int FlockCount = 10;
+	int FlockCount = 1000;
 
 	TRefCountPtr<IPooledRenderTarget> ComputeShaderOutput;
 
@@ -94,8 +94,7 @@ public:
 	//Data is already on GPU, do a single itteration
 	void Compute(
 		FRHICommandListImmediate& RHICmdList,
-		float simulationTime,
-		const TArray<FAgentState>& CurrentStates,
-		TArray<FAgentState>& OutputStates);
+		float DeltaTime,
+		const TArray<FAgentState>& CurrentStates);
 };
 

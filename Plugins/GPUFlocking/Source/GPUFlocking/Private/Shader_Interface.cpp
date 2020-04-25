@@ -26,9 +26,8 @@ void FGlobalComputeShader_Interface::SetParameters(FRHICommandListImmediate& RHI
 
 void FGlobalComputeShader_Interface::Compute(
 	FRHICommandListImmediate& RHICmdList,	
-	float simulationTime,
-	const TArray<FAgentState>& CurrentStates,
-	TArray<FAgentState>& OutputStates)
+	float DeltaTime,
+	const TArray<FAgentState>& CurrentStates)
 {
 	check(IsInRenderingThread());
 
@@ -39,17 +38,8 @@ void FGlobalComputeShader_Interface::Compute(
 	//zero out our params
 	PassParameters = GraphBuilder.AllocParameters<FGlobalComputeShader_Interface::FParameters>();
 
-	PassParameters->DeltaTime = simulationTime;
-	   	  
-	//For debugging only
-	//StepTotalDebug[0] = 0;
-	//StepTotal_RA_.SetNum(1);
-	//FMemory::Memcpy(StepTotal_RA_.GetData(), StepTotalDebug.GetData(), sizeof(float) * 1);
-	//StepTotal_resource_.ResourceArray = &StepTotal_RA_;
-	//StepTotal_buffer_ = RHICreateStructuredBuffer(sizeof(float), sizeof(float) * 1, BUF_ShaderResource | BUF_UnorderedAccess, StepTotal_resource_);
-	//StepTotal_UAV_ = RHICreateUnorderedAccessView(StepTotal_buffer_, /* bool bUseUAVCounter */ false, /* bool bAppendBuffer */ false);
-	//PassParameters->StepTotal = StepTotal_UAV_;	
-	
+	PassParameters->DeltaTime = DeltaTime;
+
 	// First half of array is for new state data to be written to, latter half is for reading data.
 	TResourceArray<FAgentState> data;
 	for (int i = 0; i < FlockCount; i++) {
@@ -76,10 +66,6 @@ void FGlobalComputeShader_Interface::Compute(
 	OutputDesc.TargetableFlags = TexCreate_ShaderResource | TexCreate_UAV;
 	//OutputDesc.bForceSeparateTargetAndShaderResource = false;
 
-
-	//FRDGTextureRef HairLUTTexture = GraphBuilder.CreateTexture(OutputDesc, TEXT("HairLUT"));
-	//PassParameters->OutputTexture = GraphBuilder.CreateUAV(FRDGTextureUAVDesc(HairLUTTexture, 0));
-
 	//Adding a pass
 	FComputeShaderUtils::AddPass(
 		GraphBuilder,
@@ -89,7 +75,7 @@ void FGlobalComputeShader_Interface::Compute(
 		//This is different than the grouping in shader
 		//This will create "Groups of threads"
 		//The on in the shader, is the number of thread per group
-		FIntVector(1, 128, 1));
+		FIntVector(1, 256, 1));
 
 	//GraphBuilder.QueueTextureExtraction(HairLUTTexture, &ComputeShaderOutput, true);
 
@@ -105,9 +91,10 @@ void FGlobalComputeShader_Interface::Compute(
 	FAgentState* p = (FAgentState*)shader_data;
 	for (int32 Row = 0; Row < FlockCount; ++Row) {
 		result.Add(*p);
-		OutputStates[Row] = *p;
 		p++;
 	}
+
+	States = result;
 
 	//FMemory::Memcpy(States.GetData(), shader_data, sizeof(FAgentState) * 1);
 

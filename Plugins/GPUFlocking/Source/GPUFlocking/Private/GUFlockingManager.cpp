@@ -1,10 +1,11 @@
-#pragma once
+
 #include "GPUFlockingManager.h"
 
 #include "GenerateMips.h"
 #include "RenderGraph.h"
 #include "RenderGraphUtils.h"
 #include "RenderTargetPool.h"
+#include "Kismet/KismetMathLibrary.h"
 
 DEFINE_LOG_CATEGORY(GPUFlocking);
 
@@ -33,9 +34,32 @@ void AGPUFlockingManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	Calculate(DeltaTime);
+
+	TShaderMap<FGlobalShaderType>* GlobalShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
+	TShaderMapRef< FGlobalComputeShader_Interface > ComputeShader(GlobalShaderMap);
+
+	for(int i = 0; i < ComputeShader->States.Num(); i++)
+	{
+		const auto State = ComputeShader->States[i];
+
+		//UE_LOG(LogTemp, Error, TEXT("%f %f %f"), State.position[0], State.position[1], State.position[2]);
+
+		AgentStates = ComputeShader->States;
+
+		// TODO BatchUpdateInstances
+
+		FTransform AgentTransform;
+		FVector Position = FVector(State.position[0], State.position[1], State.position[2]);
+		AgentTransform.SetLocation(Position);
+
+		FVector Velocity = FVector(State.velocity[0], State.velocity[1], State.velocity[2]);
+		AgentTransform.SetRotation(UKismetMathLibrary::MakeRotFromZ(Velocity).Quaternion());
+
+		HierarchicalInstancedStaticMeshComponent->UpdateInstanceTransform(i, AgentTransform, false, true);
+	}
 }
 
-bool AGPUFlockingManager::Setup()
+void AGPUFlockingManager::Setup()
 {
 	for (int i = 0; i < FlockCount; i++)
 	{
@@ -60,45 +84,36 @@ bool AGPUFlockingManager::Setup()
 
 		state.instanceId = i;
 		AgentStates.Add(state);
+		
+		HierarchicalInstancedStaticMeshComponent->AddInstance(FTransform());
 	}
 
 	FRHICommandListImmediate& RHICmdList = GRHICommandList.GetImmediateCommandList();
 
 	TShaderMap<FGlobalShaderType>* GlobalShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
-	TShaderMapRef< FGlobalComputeShader_Interface > ComputeShader(GlobalShaderMap);
-
+	TShaderMapRef<FGlobalComputeShader_Interface> ComputeShader(GlobalShaderMap);
+	
 	ENQUEUE_RENDER_COMMAND(FlockCompute)(
 		[ComputeShader](FRHICommandListImmediate& RHICmdList)
 	{
 		ComputeShader->SetParameters(RHICmdList);
 	});
-
-
-	return true;
 }
 
-bool AGPUFlockingManager::Calculate(float DeltaTime)
+void AGPUFlockingManager::Calculate(float DeltaTime)
 {	
 	FRHICommandListImmediate& RHICmdList = GRHICommandList.GetImmediateCommandList();
 
 	TShaderMap<FGlobalShaderType>* GlobalShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
-	TShaderMapRef< FGlobalComputeShader_Interface > ComputeShader(GlobalShaderMap);
+	TShaderMapRef<FGlobalComputeShader_Interface> ComputeShader(GlobalShaderMap); 
 
 	auto CurrentStates = AgentStates;
-	TArray<FAgentState> ResultStates;
-
-	for (int i = 0; i < FlockCount; i++)
-	{
-		ResultStates.Add(FAgentState());
-	}
 
 	ENQUEUE_RENDER_COMMAND(FlockCompute)(
-		[ComputeShader, DeltaTime, CurrentStates, &ResultStates](FRHICommandListImmediate& RHICmdList)
+		[ComputeShader, DeltaTime, CurrentStates](FRHICommandListImmediate& RHICmdList)
 	{
-		ComputeShader->Compute(RHICmdList, DeltaTime, CurrentStates, ResultStates);
+		ComputeShader->Compute(RHICmdList, DeltaTime, CurrentStates);
 	});
-
-	return true;
 }
 
 

@@ -33,9 +33,7 @@
 /NODEFAULTLIB:"LIBCPD"
 /FUNCTIONPADMIN
 "C:\Users\corma\Documents\Projects\UE4-Flocking\Intermediate\Build\Win64\MyProjectEditor\DebugGame\Engine\SharedPCH.Engine.NonOptimized.h.obj"
-"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\DebugGame\GPUFlocking\GPUFlockingActor.cpp.obj"
 "C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\DebugGame\GPUFlocking\GUFlockingManager.cpp.obj"
-"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\DebugGame\GPUFlocking\Shader_Interface.cpp.obj"
 "C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\DebugGame\GPUFlocking\Module.GPUFlocking.cpp.obj"
 "C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\DebugGame\GPUFlocking\Module.GPUFlocking.gen.cpp.obj"
 "C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\DebugGame\GPUFlocking\Default.rc2.res"

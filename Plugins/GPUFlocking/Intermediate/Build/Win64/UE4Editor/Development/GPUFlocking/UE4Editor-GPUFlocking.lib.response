@@ -1,0 +1,16 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-GPUFlocking.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\corma\Documents\Projects\UE4-Flocking\Intermediate\Build\Win64\MyProjectEditor\Development\Engine\SharedPCH.Engine.h.obj"
+"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\Development\GPUFlocking\GUFlockingManager.cpp.obj"
+"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\Development\GPUFlocking\Shader_Interface.cpp.obj"
+"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\Development\GPUFlocking\Module.GPUFlocking.cpp.obj"
+"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\Development\GPUFlocking\Module.GPUFlocking.gen.cpp.obj"
+"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\Development\GPUFlocking\Default.rc2.res"
+/OUT:"C:\Users\corma\Documents\Projects\UE4-Flocking\Plugins\GPUFlocking\Intermediate\Build\Win64\UE4Editor\Development\GPUFlocking\UE4Editor-GPUFlocking.lib"
+/INCLUDE:IMPLEMENT_MODULE_GPUFlocking

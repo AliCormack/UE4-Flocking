@@ -21,7 +21,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 		P_GET_PROPERTY(UFloatProperty,Z_Param_DeltaTime); \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		*(bool*)Z_Param__Result=P_THIS->Calculate(Z_Param_DeltaTime); \
+		P_THIS->Calculate(Z_Param_DeltaTime); \
 		P_NATIVE_END; \
 	} \
  \
@@ -29,7 +29,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 	{ \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		*(bool*)Z_Param__Result=P_THIS->Setup(); \
+		P_THIS->Setup(); \
 		P_NATIVE_END; \
 	}
 
@@ -41,7 +41,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 		P_GET_PROPERTY(UFloatProperty,Z_Param_DeltaTime); \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		*(bool*)Z_Param__Result=P_THIS->Calculate(Z_Param_DeltaTime); \
+		P_THIS->Calculate(Z_Param_DeltaTime); \
 		P_NATIVE_END; \
 	} \
  \
@@ -49,7 +49,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 	{ \
 		P_FINISH; \
 		P_NATIVE_BEGIN; \
-		*(bool*)Z_Param__Result=P_THIS->Setup(); \
+		P_THIS->Setup(); \
 		P_NATIVE_END; \
 	}
 

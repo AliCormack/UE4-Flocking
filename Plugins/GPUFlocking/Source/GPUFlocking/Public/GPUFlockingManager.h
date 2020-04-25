@@ -23,15 +23,16 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	bool Setup();
+	void Setup();
 
 	UFUNCTION(BlueprintCallable)
-	bool Calculate(float DeltaTime);
+	void Calculate(float DeltaTime);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UInstancedStaticMeshComponent* HierarchicalInstancedStaticMeshComponent;
 
-	int FlockCount = 10;
+	int FlockCount = 1000;
 
 	TArray<FAgentState> AgentStates;
+
 };

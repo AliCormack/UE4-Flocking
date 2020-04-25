@@ -1,0 +1,14 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.GPUFlocking.cpp.obj": [
+			"GPUFlockingModule.cpp.obj",
+			"GUFlockingManager.cpp.obj",
+			"Shader_Interface.cpp.obj"
+		],
+		"Module.GPUFlocking.gen.cpp.obj": [
+			"GPUFlocking.init.gen.cpp.obj",
+			"GPUFlockingManager.gen.cpp.obj"
+		]
+	}
+}
